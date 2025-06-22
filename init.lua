@@ -36,29 +36,59 @@ require("lazy").setup({
       { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate" },
       { "williamboman/mason.nvim", opts = {} },
       { "williamboman/mason-lspconfig.nvim", opts = {} },
-    }
+
+      -- Completion plugins
+      {
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+          "hrsh7th/cmp-nvim-lsp",
+          "hrsh7th/cmp-buffer",
+          "hrsh7th/cmp-path",
+          "hrsh7th/cmp-cmdline",
+          "L3MON4D3/LuaSnip",
+          "saadparwaiz1/cmp_luasnip",
+        },
+        config = function()
+          local cmp = require("cmp")
+          local luasnip = require("luasnip")
+
+          cmp.setup({
+            snippet = {
+              expand = function(args)
+                luasnip.lsp_expand(args.body)
+              end,
+            },
+            mapping = cmp.mapping.preset.insert({
+              ["<Tab>"] = cmp.mapping.select_next_item(),
+              ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+              ["<CR>"] = cmp.mapping.confirm({ select = true }),
+            }),
+            sources = cmp.config.sources({
+              { name = "nvim_lsp" },
+              { name = "luasnip" },
+              { name = "buffer" },
+              { name = "path" },
+            }),
+          })
+        end,
+      },
+    },
   },
   { colorscheme = { "catppuccin" } },
   checker = { enabled = true },
 })
 
--- Treesitter highlighting
 require('nvim-treesitter.configs').setup({
-  ensure_installed = { "python", "lua", "bash", "json", "c_sharp" }, 
+  ensure_installed = { "python", "lua", "bash", "json", "c_sharp", "go" },
   auto_install = true,
-  highlight = {
-    enable = true,
-  },
+  highlight = { enable = true },
 })
 
--- Catppuccin 
 require("catppuccin").setup({
-  flavour = "mocha", 
+  flavour = "mocha",
   integrations = {
     treesitter = true,
-    native_lsp = {
-      enabled = true,
-    },
+    native_lsp = { enabled = true },
   },
   highlight_overrides = {
     all = function(colors)
@@ -76,6 +106,12 @@ require('lspconfig').omnisharp.setup({
   enable_import_completion = true,
 })
 
+require('lspconfig').gopls.setup({
+  cmd = { "gopls" },
+  filetypes = { "go", "gomod", "gowork", "gotmpl" },
+  root_dir = require("lspconfig.util").root_pattern("go.work", "go.mod", ".git"),
+})
+
 vim.cmd("colorscheme catppuccin")
 local builtin = require('telescope.builtin')
 vim.api.nvim_set_keymap('i', 'jk', '<Esc>', { noremap = true, silent = true })
@@ -88,8 +124,7 @@ vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live gr
 vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
 vim.keymap.set('n', '<leader>td', builtin.diagnostics, { desc = 'Telescope diagnostics' })
-vim.keymap.set('n', '<leader>fd', require('telescope.builtin').lsp_definitions, { desc = 'LSP defs' })
+vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, { desc = 'LSP defs' })
 vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<cr>')
 vim.keymap.set('n', '<leader>tf', ':NvimTreeFocus<cr>')
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostics' })
-
