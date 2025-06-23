@@ -113,11 +113,8 @@ require('lspconfig').gopls.setup({
   filetypes = { "go", "gomod", "gowork", "gotmpl" },
   root_dir = require("lspconfig.util").root_pattern("go.work", "go.mod", ".git"),
 })
-
-require('lspconfig').pyright.setup({
-  cmd = { "pyright-langserver", "--stdio" },
-  filetypes = { "python" },
-  root_dir = require("lspconfig.util").root_pattern(".git", "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt"),
+require("lspconfig").pyright.setup({
+  root_dir = require("lspconfig.util").root_pattern("pyproject.toml"),
 })
 
 vim.cmd("colorscheme catppuccin")
@@ -137,3 +134,7 @@ vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, { desc = 'LSP defs' }
 vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<cr>')
 vim.keymap.set('n', '<leader>tf', ':NvimTreeFocus<cr>')
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostics' })
+
+
+-- Some magic to deduplicate when lsp returns the same path twice
+local telescope_builtin = require("telescope.builtin")
