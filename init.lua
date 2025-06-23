@@ -35,7 +35,9 @@ require("lazy").setup({
       { "nvim-tree/nvim-tree.lua", opts = {} },
       { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate" },
       { "williamboman/mason.nvim", opts = {} },
-      { "williamboman/mason-lspconfig.nvim", opts = {} },
+      { "williamboman/mason-lspconfig.nvim", opts = {
+       ensure_installed = { "pyright", "gopls", "omnisharp" } 
+      } },
 
       -- Completion plugins
       {
@@ -110,6 +112,12 @@ require('lspconfig').gopls.setup({
   cmd = { "gopls" },
   filetypes = { "go", "gomod", "gowork", "gotmpl" },
   root_dir = require("lspconfig.util").root_pattern("go.work", "go.mod", ".git"),
+})
+
+require('lspconfig').pyright.setup({
+  cmd = { "pyright-langserver", "--stdio" },
+  filetypes = { "python" },
+  root_dir = require("lspconfig.util").root_pattern(".git", "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt"),
 })
 
 vim.cmd("colorscheme catppuccin")
