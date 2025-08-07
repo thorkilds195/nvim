@@ -24,6 +24,11 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.textwidth = 80
 
+vim.opt.shell = [["C:/Program Files/Git/bin/bash.exe"]]
+vim.opt.shellcmdflag = "-c"
+vim.opt.shellquote = ""
+vim.opt.shellxquote = ""
+
 require("lazy").setup({
   spec = {
     {
@@ -31,7 +36,30 @@ require("lazy").setup({
       { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
       { "lewis6991/gitsigns.nvim", opts = {} },
       { "nvim-lualine/lualine.nvim", dependencies = { 'nvim-tree/nvim-web-devicons' }, opts = {} },
-      { "nvim-telescope/telescope.nvim", dependencies = { 'nvim-lua/plenary.nvim' } },
+{
+  "nvim-telescope/telescope.nvim",
+  dependencies = { "nvim-lua/plenary.nvim" },
+  config = function()
+    require("telescope").setup({
+      defaults = {
+        find_command = {
+          "fd", "--type", "f", "--strip-cwd-prefix", "--hidden",
+          "--exclude", ".git", "--exclude", "venv",
+          "--exclude", ".venv", "--exclude", "node_modules",
+          "--exclude", "__pycache__", "--exclude", "build"
+        }
+      }
+    })
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+vim.keymap.set('n', '<leader>td', builtin.diagnostics, { desc = 'Telescope diagnostics' })
+vim.keymap.set('n', '<leader>fr', builtin.lsp_references, { desc = 'LSP references' })
+vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, { desc = 'LSP defs' })
+  end
+},
       { "nvim-tree/nvim-tree.lua", opts = {} },
       { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate" },
       { "williamboman/mason.nvim", opts = {} },
@@ -116,25 +144,13 @@ require('lspconfig').gopls.setup({
 require("lspconfig").pyright.setup({
   root_dir = require("lspconfig.util").root_pattern("pyproject.toml"),
 })
-
 vim.cmd("colorscheme catppuccin")
-local builtin = require('telescope.builtin')
 vim.api.nvim_set_keymap('i', 'jk', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Window left' })
 vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = 'Window right' })
 vim.keymap.set('n', '<C-j>', '<C-w>j', { desc = 'Window down' })
 vim.keymap.set('n', '<C-k>', '<C-w>k', { desc = 'Window up' })
-vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
-vim.keymap.set('n', '<leader>td', builtin.diagnostics, { desc = 'Telescope diagnostics' })
-vim.keymap.set('n', '<leader>fr', builtin.lsp_references, { desc = 'LSP references' })
-vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, { desc = 'LSP defs' })
 vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<cr>')
 vim.keymap.set('n', '<leader>tf', ':NvimTreeFocus<cr>')
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostics' })
 
-
--- Some magic to deduplicate when lsp returns the same path twice
-local telescope_builtin = require("telescope.builtin")
