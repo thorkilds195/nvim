@@ -13,7 +13,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 vim.opt.rtp:prepend(lazypath)
-
+local in_vscode = (vim.g.vscode == 1) or (vim.g.vscode == true)
 vim.g.mapleader = " "
 vim.opt.termguicolors = true
 vim.opt.cursorline = true
@@ -154,3 +154,15 @@ vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<cr>')
 vim.keymap.set('n', '<leader>tf', ':NvimTreeFocus<cr>')
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostics' })
 
+if in_vscode then
+  local vsc = function(cmd, args) return vim.fn.VSCodeNotify(cmd, args or {}) end
+  vim.keymap.set("n", "<leader>ff", function() vsc("workbench.action.quickOpen") end, { silent = true, desc = "Files (VS Code Quick Open)" })
+  vim.keymap.set("n", "<leader>fg", function() vsc("workbench.action.findInFiles") end, { silent = true, desc = "Grep (Find in Files)" })
+  vim.keymap.set("n", "<leader>fb", function() vsc("workbench.action.showAllEditors") end, { silent = true, desc = "Buffers (Open Editors)" })
+  vim.keymap.set("n", "<leader>td", function() vsc("workbench.actions.view.problems") end, { silent = true, desc = "Diagnostics (Problems)" })
+  vim.keymap.set("n", "<leader>fr", function() vsc("editor.action.referenceSearch.trigger") end, { silent = true, desc = "LSP References" })
+  vim.keymap.set("n", "<leader>fd", function() vsc("editor.action.revealDefinition") end, { silent = true, desc = "LSP Definition" })
+  -- Replace NvimTree mappings with Explorer
+  vim.keymap.set("n", "<leader>tt", function() vsc("workbench.view.explorer") end, { silent = true, desc = "Explorer" })
+  vim.keymap.set("n", "<leader>tf", function() vsc("workbench.files.action.focusFilesExplorer") end, { silent = true, desc = "Focus Explorer" })
+end
