@@ -165,4 +165,9 @@ if in_vscode then
   -- Replace NvimTree mappings with Explorer
   vim.keymap.set("n", "<leader>tt", function() vsc("workbench.view.explorer") end, { silent = true, desc = "Explorer" })
   vim.keymap.set("n", "<leader>tf", function() vsc("workbench.files.action.focusFilesExplorer") end, { silent = true, desc = "Focus Explorer" })
+  -- Focus editor groups (VS Code)
+  vim.keymap.set("n", "<C-h>", function() vsc("workbench.action.focusLeftGroup")  end, { silent = true, desc = "Focus left group" })
+  vim.keymap.set("n", "<C-l>", function() vsc("workbench.action.focusRightGroup") end, { silent = true, desc = "Focus right group" })
+  vim.keymap.set("n", "<C-j>", function() vsc("workbench.action.focusBelowGroup") end, { silent = true, desc = "Focus below group" })
+  vim.keymap.set("n", "<C-k>", function() vsc("workbench.action.focusAboveGroup") end, { silent = true, desc = "Focus above group" })
 end
