@@ -23,6 +23,7 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.textwidth = 80
+vim.opt.formatoptions:remove({ "t", "c" })
 
 vim.opt.shell = [["C:/Program Files/Git/bin/bash.exe"]]
 vim.opt.shellcmdflag = "-c"
