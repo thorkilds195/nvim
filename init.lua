@@ -42,12 +42,16 @@ require("lazy").setup({
   dependencies = { "nvim-lua/plenary.nvim" },
   config = function()
     require("telescope").setup({
-      defaults = {
-        find_command = {
-          "fd", "--type", "f", "--strip-cwd-prefix", "--hidden",
+      defaults = { hidden = true },
+      pickers = {
+        find_files = {
+          find_command = {
+          "fd", "--type", "f", "--no-ignore-vcs", 
+          "--strip-cwd-prefix", "--hidden",
           "--exclude", ".git", "--exclude", "venv",
           "--exclude", ".venv", "--exclude", "node_modules",
           "--exclude", "__pycache__", "--exclude", "build"
+        }
         }
       }
     })
@@ -61,7 +65,14 @@ vim.keymap.set('n', '<leader>fr', builtin.lsp_references, { desc = 'LSP referenc
 vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, { desc = 'LSP defs' })
   end
 },
-      { "nvim-tree/nvim-tree.lua", opts = {} },
+      { "nvim-tree/nvim-tree.lua", 
+        opts = {
+          filters = {
+          git_ignored = false,
+          dotfiles = false,
+            },
+          } 
+      },
       { "nvim-treesitter/nvim-treesitter", lazy = false, build = ":TSUpdate" },
       { "williamboman/mason.nvim", opts = {} },
       { "williamboman/mason-lspconfig.nvim", opts = {
